@@ -19,7 +19,7 @@ def getCompanylistData():
     data = get_scrap_data(URL)
            
         # Mengubah json ke dalam bentuk DataFrame
-    df = pd.DataFrame(data['data'])
+    df = pd.DataFrame(data['data'], columns=['BAE','DataID','Divisi','EfekEmiten_EBA','EfekEmiten_ETF','EfekEmiten_Obligasi','EfekEmiten_Saham','EfekEmiten_SPEI','Industri','SubIndustri','Email','Fax','id','JenisEmiten','KegiatanUsahaUtama','KodeDivisi','KodeEmiten','NamaEmiten','NPKP','NPWP','PapanPencatatan','Sektor','SubSektor','TanggalPencatatan','Telepon','Website','Status','Logo'])
     
     filter = df['KodeEmiten'].isin(DaftarSaham['Code'])
     
