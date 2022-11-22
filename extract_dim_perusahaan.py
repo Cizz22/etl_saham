@@ -19,21 +19,14 @@ def getCompanylistData():
     data = get_scrap_data(URL)
            
         # Mengubah json ke dalam bentuk DataFrame
-    df = pd.DataFrame(data['data'], columns=['BAE','DataID','Divisi','EfekEmiten_EBA','EfekEmiten_ETF','EfekEmiten_Obligasi','EfekEmiten_Saham','EfekEmiten_SPEI','Industri','SubIndustri','Email','Fax','id','JenisEmiten','KegiatanUsahaUtama','KodeDivisi','KodeEmiten','NamaEmiten','NPKP','NPWP','PapanPencatatan','Sektor','SubSektor','TanggalPencatatan','Telepon','Website','Status','Logo'])
+    df = pd.DataFrame(data['data'], columns=['BAE','KodeEmiten','EfekEmiten_EBA','EfekEmiten_ETF','EfekEmiten_Obligasi','EfekEmiten_Saham','EfekEmiten_SPEI','Industri','SubIndustri','Email','Fax','id','JenisEmiten','KegiatanUsahaUtama','KodeDivisi','NamaEmiten','NPKP','NPWP','PapanPencatatan','Sektor','SubSektor','TanggalPencatatan','Telepon','Website'])
     
-    filter = df['KodeEmiten'].isin(DaftarSaham['Code'])
     
-    df[filter]
-
-    # # Mengubah format tanggal menjadi datetime
-    # df['TanggalPencatatan'] = [datetime.strptime(
-    # x[:10], '%Y-%m-%d') for x in df['TanggalPencatatan']]
-        
-    DaftarPerusahaan = pd.concat([DaftarPerusahaan, df])
-
-    # urut berdasarkan kode DaftarPerusahaan
-    # DaftarPerusahaan = DaftarPerusahaan.sort_values(by='id').reset_index(drop=True)
+    for i, data in enumerate(df['KodeEmiten']):
+        if data in DaftarSaham['Code'].values:
+            df.iloc[i:i+1].fillna('', inplace=True)
+            DaftarPerusahaan = pd.concat([DaftarPerusahaan, df.iloc[i:i+1]])
+    
+    DaftarPerusahaan = DaftarPerusahaan.sort_values(by='KodeEmiten').reset_index(drop=True)
 
     return DaftarPerusahaan
-
-getCompanylistData().to_csv('DaftarPerusahaan.csv', index=False)
