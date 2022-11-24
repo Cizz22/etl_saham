@@ -15,6 +15,8 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+
 
 
 def engine(creds):
@@ -47,8 +49,7 @@ def get_scrap_data(url):
 pd.options.mode.chained_assignment = None
 
 
-def getdate():
-    print('getting date...')
+def getdate(n):
     # Mengambil tanggal hari ini
     today = date.today()
     # Mengambil tanggal hari kerja terakhir (termasuk hari ini)
@@ -59,7 +60,7 @@ def getdate():
     else:
         akhir = today
     # Mengambil tanggal 5 hari kerja sebelumnya (termasuk hari ini)
-    awal = (akhir - pd.tseries.offsets.BDay(4)).date()
+    awal = (akhir - pd.tseries.offsets.BDay(n)).date()
     # Mengubah format datetime ke dalam bentuk string
     awal = awal.strftime("%Y_%m_%d")
     akhir = akhir.strftime("%Y_%m_%d")
