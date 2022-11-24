@@ -17,17 +17,15 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 
-def create_engine(creds):
+def engine(creds):
     return create_engine(
         "postgresql+psycopg2://{}:{}@{}:{}/{}".format(
-            creds["user"],
+            creds['user'],
             creds['pass'],
             creds['host'],
             creds['port'],
             creds['db']
         ),
-        # echo=True,
-        future=True,
     )
 
 def get_scrap_data(url):

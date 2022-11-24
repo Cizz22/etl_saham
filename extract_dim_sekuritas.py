@@ -1,9 +1,10 @@
 import os, json, pandas as pd
 
 from datetime import datetime
-from utils import get_scrap_data, create_engine
+from utils import get_scrap_data, engine as pg
 from sqlalchemy import MetaData, Table, Column, Integer, String, DateTime, ForeignKey, Text, select, insert
 
+from creds import creds
 
 pd.options.mode.chained_assignment = None
 
@@ -25,9 +26,21 @@ def getBrokerlistData():
     return DaftarBroker
 
 def createStockListTable():
-    pass
+    engine = pg(creds)
+    metadata = MetaData(bind=engine)
+    stocks = Table('sekuritas', metadata,
+                       Column('IDFirm', String, primary_key=True),
+                       Column('FirmName', Text,nullable=False, unique=True))
+    stocks.drop(checkfirst=True)
+    stocks.create()
     
 def insertStockListData():
-    pass    
+    data = getBrokerlistData()
+    
+    with pg(creds).connect() as conn:
+        data.to_sql('sekuritas', conn, if_exists='append', index=False)
+        
+createStockListTable()
+insertStockListData()
 
 

@@ -1,14 +1,14 @@
 import os, json, pandas as pd
 
 from datetime import datetime
-from utils import get_scrap_data, create_engine
+from utils import get_scrap_data, engine as pg
 from sqlalchemy import MetaData, Table, Column, Integer, String, DateTime, ForeignKey, Text, select, insert
-
+from creds import creds
 
 pd.options.mode.chained_assignment = None
 
 def getCompanylistData():
-    DaftarSaham = pd.read_csv('DaftarSaham.csv')
+    DaftarSaham = pd.read_sql_query('select * from saham', pg(creds))
     
     # DaftarSaham = [code for code in DaftarSaham['Code']]
     
@@ -19,7 +19,7 @@ def getCompanylistData():
     data = get_scrap_data(URL)
            
         # Mengubah json ke dalam bentuk DataFrame
-    df = pd.DataFrame(data['data'], columns=['BAE','KodeEmiten','EfekEmiten_EBA','EfekEmiten_ETF','EfekEmiten_Obligasi','EfekEmiten_Saham','EfekEmiten_SPEI','Industri','SubIndustri','Email','Fax','id','JenisEmiten','KegiatanUsahaUtama','KodeDivisi','NamaEmiten','NPKP','NPWP','PapanPencatatan','Sektor','SubSektor','TanggalPencatatan','Telepon','Website'])
+    df = pd.DataFrame(data['data'], columns=['BAE','KodeEmiten','EfekEmiten_EBA','EfekEmiten_ETF','EfekEmiten_Obligasi','EfekEmiten_Saham','EfekEmiten_SPEI','Industri','SubIndustri','Email','Fax','JenisEmiten','KegiatanUsahaUtama','KodeDivisi','NPKP','NPWP','PapanPencatatan','TanggalPencatatan','Telepon','Website'])
     
     
     for i, data in enumerate(df['KodeEmiten']):
@@ -30,3 +30,43 @@ def getCompanylistData():
     DaftarPerusahaan = DaftarPerusahaan.sort_values(by='KodeEmiten').reset_index(drop=True)
 
     return DaftarPerusahaan
+
+def createStockListTable():
+    engine = pg(creds)
+    metadata = MetaData(bind=engine)
+    saham = Table('saham', metadata,autoload=True, autoload_with=engine)
+    
+    stocks = Table('perusahaan', metadata,
+                       Column('id', Integer, primary_key=True, autoincrement=True),
+                       Column('BAE', String),
+                       Column('KodeEmiten', String,ForeignKey(saham.c.Code), nullable=False, unique=True),
+                       Column('EfekEmiten_EBA', String),
+                       Column('EfekEmiten_ETF',String),
+                       Column('EfekEmiten_Obligasi', String),
+                       Column('EfekEmiten_Saham', String),
+                       Column('EfekEmiten_SPEI', String),
+                       Column('Industri', String),
+                       Column('SubIndustri', String),
+                       Column('Email', String),
+                       Column('Fax', String),
+                       Column('JenisEmiten', String),
+                       Column('KegiatanUsahaUtama', String),
+                       Column('KodeDivisi', String),
+                       Column("NPKP", String),
+                       Column("NPWP", String),
+                       Column("PapanPencatatan", String),
+                       Column("TanggalPencatatan", DateTime),
+                       Column("Telepon", String),
+                       Column("Website", String),
+                       )
+    stocks.drop(checkfirst=True)
+    stocks.create()
+    
+def insertStockListData():
+    data = getCompanylistData()
+    
+    with pg(creds).connect() as conn:
+        data.to_sql('perusahaan', conn, if_exists='append', index=False)
+        
+createStockListTable()
+insertStockListData()
