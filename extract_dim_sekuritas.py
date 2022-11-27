@@ -25,7 +25,7 @@ def getBrokerlistData():
 
     return DaftarBroker
 
-def createStockListTable():
+def createBrokerListTable():
     engine = pg(creds)
     metadata = MetaData(bind=engine)
     stocks = Table('sekuritas', metadata,
@@ -34,13 +34,11 @@ def createStockListTable():
     stocks.drop(checkfirst=True)
     stocks.create()
     
-def insertStockListData():
+def insertBrokerListData():
     data = getBrokerlistData()
     
     with pg(creds).connect() as conn:
         data.to_sql('sekuritas', conn, if_exists='append', index=False)
         
-createStockListTable()
-insertStockListData()
 
 

@@ -31,7 +31,7 @@ def getCompanylistData():
 
     return DaftarPerusahaan
 
-def createStockListTable():
+def createCompanyList():
     engine = pg(creds)
     metadata = MetaData(bind=engine)
     saham = Table('saham', metadata,autoload=True, autoload_with=engine)
@@ -62,11 +62,9 @@ def createStockListTable():
     stocks.drop(checkfirst=True)
     stocks.create()
     
-def insertStockListData():
+def insertCompanyList():
     data = getCompanylistData()
     
     with pg(creds).connect() as conn:
         data.to_sql('perusahaan', conn, if_exists='append', index=False)
         
-createStockListTable()
-insertStockListData()

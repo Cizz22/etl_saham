@@ -66,6 +66,3 @@ def insertBrokerSummary():
     with pg(creds).connect() as conn:
         data.to_sql('broker_summary', conn, if_exists='append', index=False)
         
-
-createBrokerSummary()
-insertBrokerSummary()

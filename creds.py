@@ -1,7 +1,7 @@
 creds = {
-    "host" : "34.124.198.72",
+    "host" : "34.142.229.22",
     "port" : 5432,
-    "user" : "kcb_db",
-    "pass" : "password",
+    "user" : "user",
+    "pass" : "pass",
     "db" : "etl_saham"
 }

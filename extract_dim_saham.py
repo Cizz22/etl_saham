@@ -51,6 +51,8 @@ def insertStockListData():
     
     with pg(creds).connect() as conn:
         data.to_sql('saham', conn, if_exists='append', index=False)
+
+
         
 
 

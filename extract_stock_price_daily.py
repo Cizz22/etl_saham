@@ -6,12 +6,15 @@ from creds import creds
 
 from datetime import datetime, date, timedelta
 
+from utils import engine as pg
+
+from creds import creds
+
 from sqlalchemy import MetaData, Table, Column, Integer, String, DateTime, ForeignKey, Text, select, insert
 
-from glob import glob
 
 def getStockPriceDaily():
-    DaftarSaham = pd.read_csv('DaftarSaham.csv')
+    DaftarSaham = pd.read_sql_table('saham', pg(creds).connect())
     awal, akhir = getdate(0)
     header, cookies, crumb, tradingperiod = getcookie()
     result = getstockdata(DaftarSaham, header, cookies, crumb, awal, akhir, tradingperiod)
@@ -128,6 +131,3 @@ def insertStockPriceDaily():
     with pg(creds).begin() as conn:
         data.to_sql('harga_saham_harian', conn, if_exists='append', index=False)
 
-
-createStockPriceDailyTable()
-insertStockPriceDaily()
